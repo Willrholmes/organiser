@@ -5,12 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Home</title>
+    <title>Calendar - Home</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
   </head>
   <body>
-    <h1>Welcome to the Calendar homepage. Calendar incoming.</h1>
+    <h1>{{ title }}</h1>
+    <h2>Calendar incoming for March, 2017</h2>
+
+    {% load calendarify %}
+
+      <p>{% calendarify year month %}</p>
+
+
 
     <script src="js/bootstrap.min.js"></script>
   </body>

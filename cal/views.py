@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+import datetime
 
 def home(request):
-    return render(request, 'home.html')
+    title = "Welcome To The Calendar Home Page"
+    month = str(datetime.datetime.now().strftime("%m"))
+    year = str(datetime.datetime.now().strftime("%Y"))
+    return render(request, 'home.html', {'month':month, 'year':year, 'title':title})
