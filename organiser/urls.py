@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from cal import views, models
 
 urlpatterns = [
     #url(r'^admin/', admin.site.urls),
-    url(r'^$', include('cal.urls')),
+    url(r'^$', views.home, name='home'),
+    url(r'^newevent/$', views.newEvent, name='newevent'),
+    url(r'^(P?<title>)/', views.viewEvent, name='viewevent'),
+    url(r'^(\d+)/(\d+)$', views.home, name='another-month')
 ]
