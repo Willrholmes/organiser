@@ -23,15 +23,13 @@ def monthdict(_date):
     'next_year':next_year,
     }
 
-def calendar(_date, title):
+def calendar(_date, title=None):
     date_dict = monthdict(_date)
-    last_month_date = date(date_dict['year'], date_dict['last_month'], 1)
-    next_month_date = date(date_dict['year'], date_dict['next_month'], monthrange(
-        date_dict['year'], date_dict['next_month'])[1])
+    from_month_date = date(date_dict['year'], date_dict['month'], 1)
+    to_month_date = date(date_dict['year'], date_dict['month'], monthrange(
+        date_dict['year'], date_dict['month'])[1])
     event_list = Events.objects.filter(start_date__gte=str(
-        last_month_date)).filter(start_date__lte=str(next_month_date))
-    #nextmonthurl = "/%s/%s" % (date_dict['next_month'], date_dict['next_year'])
-    #lastmonthurl = "/%s/%s" % (date_dict['last_month'], date_dict['last_year'])
+        from_month_date)).filter(start_date__lte=str(to_month_date))
     return {
         'month':date_dict['month'],
         'year':date_dict['year'],
@@ -41,6 +39,4 @@ def calendar(_date, title):
         'lastyear':date_dict['last_year'],
         'nextmonth':date_dict['next_month'],
         'nextyear':date_dict['next_year'],
-        #'nextmonthurl':nextmonthurl,
-        #'lastmonthurl':lastmonthurl,
         }

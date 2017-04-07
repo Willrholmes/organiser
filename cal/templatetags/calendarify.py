@@ -1,7 +1,6 @@
 from django import template
 from calendar import HTMLCalendar
 from datetime import date
-from django import template
 from itertools import groupby
 
 from django.utils.html import conditional_escape as esc
@@ -57,7 +56,8 @@ class EventCalendar(HTMLCalendar):
                 body = ['<ul>']
                 for event in self.events[day]:
                     body.append('<li>')
-                    body.append('<a href="/%s/">' % event.title)
+                    body.append('<a id="event" href="%s">' 
+                                    % event.get_absolute_url())
                     body.append(esc(event.title))
                     body.append('</a></li>')
                 body.append('</ul>')

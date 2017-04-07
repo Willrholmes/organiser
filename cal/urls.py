@@ -1,9 +1,11 @@
-from django.conf.urls import url
-#from django.contrib import admin
-from . import views
+from django.conf.urls import url, include
+from django.contrib import admin
+from cal import views, models
 
+app_name = 'cal'
 urlpatterns = [
-    #url(r'^admin/', admin.site.urls),
-    #url(r'^', views.home, name='home'),
-    #url(r'^newevent/$', views.newevent, name='newevent'),
+    url(r'^$', views.home, name='home'),
+    url(r'^newevent/$', views.newevent, name='newevent'),
+    url(r'^events/(\d+)/', views.viewevent, name='viewevent'),
+    url(r'^(?P<month>\d+)/(?P<year>\d+)$', views.home, name='another-month'),
 ]

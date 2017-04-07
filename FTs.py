@@ -31,8 +31,10 @@ class FunctionalTest(StaticLiveServerTestCase):
         cls.browser.quit()
         super(FunctionalTest, cls).tearDownClass()
 
+class CalendarTest(FunctionalTest):
+
     def test_homepage_is_calendar(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/"))
+        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
         self.assertIn('Calendar', self.browser.title)
 
         month = datetime.now().strftime("%B")
@@ -40,7 +42,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.assertIn(month, home_month)
 
     def test_create_new_event(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/"))
+        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
 
         # Open new event setup
         self.browser.find_element_by_class_name("new_event").click()
@@ -61,10 +63,29 @@ class FunctionalTest(StaticLiveServerTestCase):
             lambda: self.browser.find_element_by_id("calendarify")
         )
 
-        self.browser.find_element_by_xpath("//a[@href='/Event 1/']")
+        self.browser.find_element_by_id("event").click()
 
-    def test_next_month(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/"))
+        wait_for(
+            lambda: self.browser.find_element_by_id("id_start_date")
+        )
+
+        for i in "Event 1":
+            self.browser.find_element_by_id(
+                    "id_title").send_keys(Keys.BACK_SPACE)
+
+        self.browser.find_element_by_id("id_title").send_keys("Change event")
+        self.browser.find_element_by_id("submit").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("calendarify")
+        )
+
+        event = self.browser.find_element_by_id("event").text
+
+        self.assertEqual(event, "Change event")
+
+    def test_next_last_month(self):
+        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
         self.browser.find_element_by_class_name("next_month").click()
 
         wait_for(
@@ -83,8 +104,6 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.assertIn(_month, month_year)
         self.assertIn(_year, month_year)
 
-    def test_last_month(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/"))
         self.browser.find_element_by_class_name("last_month").click()
 
         wait_for(
@@ -92,16 +111,39 @@ class FunctionalTest(StaticLiveServerTestCase):
         )
 
         month_year = self.browser.find_element_by_class_name("welcome").text
-        month_int = int(date.today().strftime("%m")) - 1
-        if month_int == 'December':
-            year_int = int(date.today().strftime("%y")) - 1
-        else:
-            year_int = int(date.today().strftime("%y"))
-        _date = date.today().replace(year=year_int, month=month_int)
-        _month = _date.strftime("%B")
-        _year = _date.strftime("%y")
-        self.assertIn(_month, month_year)
-        self.assertIn(_year, month_year)
+
+        self.assertIn(date.today().strftime("%B"), month_year)
+        self.assertIn(date.today().strftime("%Y"), month_year)
+
+
+class accountsTest(FunctionalTest):
+
+    def test_create_login_test(self):
+        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
+        self.browser.find_element_by_class_name("new-account").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_class_name("new-account-form")
+        )
+
+        self.browser.find_element_by_id("id_email").send_keys("test@test.com")
+        self.browser.find_element_by_id("id_username").send_keys("Testuser")
+        self.browser.find_element_by_id("id_password").send_keys("password")
+        self.browser.find_element_by_id("id_confirm_password").send_keys(
+                                        "password")
+        self.browser.find_element_by_id("submit").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("calendarify")
+        )
+
+        self.browser.find_element_by_id("username").send_keys("Testuser")
+        self.browser.find_element_by_id("password").send_keys("password")
+        self.browser.find_element_by_id("submit").click()
+
+        user = self.browser.find_element_by_class_name("navbar-text").text
+
+        self.assertEqual(user, "Logged in as Testuser")
 
 if __name__ == "__main__":
     unittest.main()

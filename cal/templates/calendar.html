@@ -11,28 +11,52 @@
 
   </head>
   <body>
+    <div class="container">
+      {% if form.errors %}
+      <p>Your username and password didn't match. Please try again.</p>
+      {% endif %}
+
+      {% if request.user.username %}
+          <ul class='nav navbar-nav navbar-right'>
+            <li class="navbar-text">Logged in as {{ request.user.username }}</li>
+            <li><a href="{% url 'accounts:logout' %}">Log out</a></li>
+          </ul>
+      {% else %}
+        <form method="post" action="{% url 'accounts:login' %}">
+          {% csrf_token %}
+          <input id="username" name="username" type="text" placeholder="Username">
+          <input id="password" name="password" type="password" placeholder="Password">
+          <input id = "submit" type="submit" value="login" />
+        </form>
+        <div>
+          <a class="new-account" href="/accounts/new-account/">Create Account</a>
+        </div>
+      {% endif %}
+    </div>
     <div>
       <h1 class="welcome">{{ title }}</h1>
     </div>
 
-    <div class="calendar">
-      <div class="navigation">
-        <form action="{% url 'another-month' lastmonth lastyear %}">
-          <button class="last_month">Previous Month</button>
-        </form>
-        <form action="{% url 'another-month' nextmonth nextyear %}">
-          <button class="next_month">Next Month</button>
+    <div class="container">
+      <div class="calendar">
+        <div class="navigation">
+          <form action="{% url 'cal:another-month' lastmonth lastyear %}">
+            <button class="last_month">Previous Month</button>
+          </form>
+          <form action="{% url 'cal:another-month' nextmonth nextyear %}">
+            <button class="next_month">Next Month</button>
+          </form>
+        </div>
+      </div>
+      <div>
+        {% load calendarify %}
+        <span id="calendarify">{% calendarify year month event_list %}</span>
+      </div>
+      <div class="new_event_div">
+        <form action="/cal/newevent/" method="get">
+          <button class="new_event">Create New Event</button>
         </form>
       </div>
-    </div>
-    <div>
-      {% load calendarify %}
-      <span id="calendarify">{% calendarify year month event_list %}</span>
-    </div>
-    <div class="new_event_div">
-      <form action="/newevent/" method="get">
-        <button class="new_event">Create New Event</button>
-      </form>
     </div>
 
     <script src="/static/cal/bootstrap/js/bootstrap.min.js"></script>

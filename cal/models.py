@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.urls import reverse
 
 class Events(models.Model):
-    title = models.CharField(max_length=250, primary_key=True)
+    title = models.CharField(max_length=250)
     start_date = models.DateField(blank=False)
     start_time = models.TimeField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
@@ -16,4 +16,4 @@ class Events(models.Model):
     description = models.TextField(blank=True)
 
     def get_absolute_url(self):
-        return reverse('cal.views.viewEvent', args=[str(self.title)])
+        return reverse('cal:viewevent', args=[str(self.id)], current_app='cal')
