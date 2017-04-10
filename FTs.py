@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.common.exceptions import WebDriverException
 from datetime import datetime, date, timedelta
+from django.contrib.auth.models import User
 import time
 import unittest
 
@@ -31,18 +32,43 @@ class FunctionalTest(StaticLiveServerTestCase):
         cls.browser.quit()
         super(FunctionalTest, cls).tearDownClass()
 
-class CalendarTest(FunctionalTest):
+class LoginForTest(FunctionalTest):
+
+    def setUp(self):
+        self.browser.get('%s%s' % (
+            self.live_server_url, "/accounts/new-account/"))
+
+        self.browser.find_element_by_id("id_email").send_keys("test@test.com")
+        self.browser.find_element_by_id("id_username").send_keys("Testuser")
+        self.browser.find_element_by_id("id_password").send_keys("password")
+        self.browser.find_element_by_id("id_confirm_password").send_keys(
+                                        "password")
+        self.browser.find_element_by_id("submit").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("calendarify")
+        )
+
+        self.browser.find_element_by_id("username").send_keys("Testuser")
+        self.browser.find_element_by_id("password").send_keys("password")
+        self.browser.find_element_by_id("submit").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_class_name("navbar-text")
+        )
+
+class CalendarTest(LoginForTest):
 
     def test_homepage_is_calendar(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
         self.assertIn('Calendar', self.browser.title)
 
         month = datetime.now().strftime("%B")
         home_month = self.browser.find_element_by_class_name('welcome').text
         self.assertIn(month, home_month)
+        user = self.browser.find_element_by_class_name("navbar-text").text
+        self.assertEqual(user, "Logged in as Testuser")
 
     def test_create_new_event(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
 
         # Open new event setup
         self.browser.find_element_by_class_name("new_event").click()
@@ -85,7 +111,6 @@ class CalendarTest(FunctionalTest):
         self.assertEqual(event, "Change event")
 
     def test_next_last_month(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
         self.browser.find_element_by_class_name("next_month").click()
 
         wait_for(
@@ -116,33 +141,10 @@ class CalendarTest(FunctionalTest):
         self.assertIn(date.today().strftime("%Y"), month_year)
 
 
-class accountsTest(FunctionalTest):
+class accountsTest(LoginForTest):
 
     def test_create_login_test(self):
-        self.browser.get('%s%s' % (self.live_server_url, "/cal/"))
-        self.browser.find_element_by_class_name("new-account").click()
-
-        wait_for(
-            lambda: self.browser.find_element_by_class_name("new-account-form")
-        )
-
-        self.browser.find_element_by_id("id_email").send_keys("test@test.com")
-        self.browser.find_element_by_id("id_username").send_keys("Testuser")
-        self.browser.find_element_by_id("id_password").send_keys("password")
-        self.browser.find_element_by_id("id_confirm_password").send_keys(
-                                        "password")
-        self.browser.find_element_by_id("submit").click()
-
-        wait_for(
-            lambda: self.browser.find_element_by_id("calendarify")
-        )
-
-        self.browser.find_element_by_id("username").send_keys("Testuser")
-        self.browser.find_element_by_id("password").send_keys("password")
-        self.browser.find_element_by_id("submit").click()
-
         user = self.browser.find_element_by_class_name("navbar-text").text
-
         self.assertEqual(user, "Logged in as Testuser")
 
 if __name__ == "__main__":

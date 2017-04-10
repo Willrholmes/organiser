@@ -1,9 +1,10 @@
 from django.test import TestCase
-from cal.views import home
+from cal import views
 from cal.models import Events
 from django.contrib.auth.models import User
 from cal.forms import EventForm
 from datetime import datetime, date
+from django.shortcuts import render
 
 _date = date.today()
 whole_date = "%s/%s/%s" % (
@@ -60,22 +61,30 @@ class EventsTestCase(LoggedInTestCase):
 
     def test_events_show_in_calendar(self):
         new_event = Events.objects.create(
-            title="Event 1", start_date=_date,
-            description="Testing...")
+            title="Event 1", start_date=_date, description="Testing...")
         response = self.client.get('/cal/')
         html = response.content.decode('utf8')
         self.assertIn(new_event.title, html)
 
     def test_event_view(self):
         new_event = Events.objects.create(
-            title="Event 1", start_date=_date,
-            description="Testing...")
+            title="Event 1", start_date=_date, description="Testing...")
         response = self.client.get('/cal/events/1/')
         html = response.content.decode('utf8')
         self.assertIn("Event 1", html)
         self.assertIn("Testing...", html)
 
-class calFormTest(LoggedInTestCase):
+    def test_cannot_view_non_related_user_event(self):
+        new_event = Events.objects.create(
+            title="Event 1", start_date=_date, description="Testing...")
+        new_user = User.objects.create_user(
+            email="test2@test.com", username="Test_User2", password='password')
+        user = self.client.login(username="Test_User2", password="password")
+        response = self.client.get('/cal/events/1/')
+        html = response.content.decode('utf8')
+        self.assertEqual('', html)
+
+class CalFormTest(LoggedInTestCase):
 
     def test_initial_date(self):
         response = self.client.get('/cal/newevent/?')
@@ -91,9 +100,18 @@ class calFormTest(LoggedInTestCase):
         self.assertIn(str(whole_date), form.as_p())
         self.assertIn("Testing...", form.as_p())
 
-class navigationTestCase(LoggedInTestCase):
+class NavigationTestCase(LoggedInTestCase):
 
     def test_month(self):
         response = self.client.get('/cal/2/2017?')
         html = response.content.decode('utf8')
         self.assertIn('February 2017', html)
+
+class NotLoggedInTests(TestCase):
+
+    def test_no_events_on_home(self):
+        event = Events.objects.create(
+            title="Event 1", start_date=_date, description="Testing...")
+        response = self.client.get('/cal/')
+        html = response.content.decode('utf8')
+        self.assertNotIn('<li><a id="event"', html)

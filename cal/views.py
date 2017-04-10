@@ -24,7 +24,8 @@ def newevent(request):
             _date = form.data['start_date'].split("/")
             a = [int(i) for i in _date]
             _date_ = date(a[2], a[1], a[0])
-            cal = calendar(_date, request)
+            title = "%s %s" % (_date_.strftime("%B"), _date_.strftime("%Y"))
+            cal = calendar(_date_, request)
             cal['title'] = title
             if form.is_valid():
                 event = form.save(commit=False)
@@ -47,7 +48,8 @@ def viewevent(request, id):
             _date = form.data['start_date'].split("/")
             a = [int(i) for i in _date]
             _date_ = date(a[2], a[1], a[0])
-            cal = calendar(_date, request)
+            title = "%s %s" % (_date_.strftime("%B"), _date_.strftime("%Y"))
+            cal = calendar(_date_, request)
             cal['title'] = title
             if form.is_valid():
                 form.save()
