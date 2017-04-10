@@ -23,17 +23,23 @@ def monthdict(_date):
     'next_year':next_year,
     }
 
-def calendar(_date, title=None):
+def calendar(_date, request):
     date_dict = monthdict(_date)
     from_month_date = date(date_dict['year'], date_dict['month'], 1)
     to_month_date = date(date_dict['year'], date_dict['month'], monthrange(
         date_dict['year'], date_dict['month'])[1])
-    event_list = Events.objects.filter(start_date__gte=str(
-        from_month_date)).filter(start_date__lte=str(to_month_date))
+    user = request.user
+    if user.is_authenticated:
+        event_list = Events.objects.filter(user=user).filter(
+            start_date__gte=str(from_month_date)).filter(start_date__lte=str(
+            to_month_date))
+    else:
+        event_list = Events.objects.filter(user=None).filter(
+            start_date__gte=str(from_month_date)).filter(start_date__lte=str(
+            to_month_date))
     return {
         'month':date_dict['month'],
         'year':date_dict['year'],
-        'title':title,
         'event_list':event_list,
         'lastmonth':date_dict['last_month'],
         'lastyear':date_dict['last_year'],

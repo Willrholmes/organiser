@@ -1,7 +1,6 @@
 from django.db import models
-from datetime import date
-from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 class Events(models.Model):
     title = models.CharField(max_length=250)
@@ -9,6 +8,7 @@ class Events(models.Model):
     start_time = models.TimeField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     created = models.DateTimeField(auto_now=True)
     location = models.CharField(max_length=250, blank=True)
     attendees = models.EmailField(blank=True)

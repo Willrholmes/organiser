@@ -12,9 +12,6 @@
   </head>
   <body>
     <div class="container">
-      {% if form.errors %}
-      <p>Your username and password didn't match. Please try again.</p>
-      {% endif %}
 
       {% if request.user.username %}
           <ul class='nav navbar-nav navbar-right'>
@@ -28,9 +25,22 @@
           <input id="password" name="password" type="password" placeholder="Password">
           <input id = "submit" type="submit" value="login" />
         </form>
+
         <div>
           <a class="new-account" href="/accounts/new-account/">Create Account</a>
         </div>
+
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <p{% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
+              {% if message.extra_tags == "login-error" %}
+                {{ message }}
+              {% endif %}
+              </p>
+            {% endfor %}
+          </ul>
+        {% endif %}
       {% endif %}
     </div>
     <div>
@@ -57,6 +67,19 @@
           <button class="new_event">Create New Event</button>
         </form>
       </div>
+
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <p {% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
+              {% if message.extra_tags == "event-error" %}
+                {{ message }}
+              {% endif %}
+          </p>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
     </div>
 
     <script src="/static/cal/bootstrap/js/bootstrap.min.js"></script>

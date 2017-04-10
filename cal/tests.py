@@ -1,6 +1,7 @@
 from django.test import TestCase
 from cal.views import home
 from cal.models import Events
+from django.contrib.auth.models import User
 from cal.forms import EventForm
 from datetime import datetime, date
 
@@ -8,7 +9,14 @@ _date = date.today()
 whole_date = "%s/%s/%s" % (
     _date.strftime('%d'), _date.strftime('%m'), _date.strftime('%Y'))
 
-class HomepageTestCase(TestCase):
+class LoggedInTestCase(TestCase):
+
+    def setUp(self):
+        new_user = User.objects.create_user(
+            email="test@test.com", username="Test_User", password='password')
+        user = self.client.login(username="Test_User", password="password")
+
+class HomepageTestCase(LoggedInTestCase):
 
     def test_home(self):
         response = self.client.get('/cal/')
@@ -30,7 +38,7 @@ class HomepageTestCase(TestCase):
         for day in range(1, days):
             self.assertIn(str(day), html)
 
-class EventsTestCase(TestCase):
+class EventsTestCase(LoggedInTestCase):
 
     def test_for_events(self):
         new_event = Events.objects.create(
@@ -52,20 +60,22 @@ class EventsTestCase(TestCase):
 
     def test_events_show_in_calendar(self):
         new_event = Events.objects.create(
-            title="Event 1", start_date=_date, description="Testing...")
+            title="Event 1", start_date=_date,
+            description="Testing...")
         response = self.client.get('/cal/')
         html = response.content.decode('utf8')
         self.assertIn(new_event.title, html)
 
     def test_event_view(self):
         new_event = Events.objects.create(
-            title="Event 1", start_date=_date, description="Testing...")
+            title="Event 1", start_date=_date,
+            description="Testing...")
         response = self.client.get('/cal/events/1/')
         html = response.content.decode('utf8')
         self.assertIn("Event 1", html)
         self.assertIn("Testing...", html)
 
-class calFormTest(TestCase):
+class calFormTest(LoggedInTestCase):
 
     def test_initial_date(self):
         response = self.client.get('/cal/newevent/?')
@@ -81,7 +91,7 @@ class calFormTest(TestCase):
         self.assertIn(str(whole_date), form.as_p())
         self.assertIn("Testing...", form.as_p())
 
-class navigationTestCase(TestCase):
+class navigationTestCase(LoggedInTestCase):
 
     def test_month(self):
         response = self.client.get('/cal/2/2017?')

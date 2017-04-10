@@ -1,5 +1,6 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, redirect
 from accounts.forms import NewUserForm
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from cal.views import home
@@ -16,8 +17,6 @@ def NewUser(request):
             user = User.objects.create_user(username, email, password)
             user.save()
             return redirect('cal:home')
-        else:
-            print(form.errors)
     else:
         form = NewUserForm()
     return render(request, 'newaccount.html', {'form':form})
@@ -31,6 +30,9 @@ def login_view(request):
             login(request, user)
             return redirect('/cal/')
         else:
+            messages.error(request,
+                "Your username and password didn't match. Please try again.",
+                extra_tags='login-error')
             return redirect('/cal/')
             #return render(request, 'home.html', calendar(_date, title, username))
     return redirect('/cal/')
