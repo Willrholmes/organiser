@@ -16,7 +16,7 @@
       {% if request.user.username %}
           <ul class='nav navbar-nav navbar-right'>
             <li class="navbar-text">Logged in as {{ request.user.username }}</li>
-            <li><a href="{% url 'accounts:logout' %}">Log out</a></li>
+            <li><a id="logout" href="{% url 'accounts:logout' %}">Log out</a></li>
           </ul>
       {% else %}
         <form method="post" action="{% url 'accounts:login' %}">
@@ -58,6 +58,7 @@
           </form>
         </div>
       </div>
+
       <div>
         {% load calendarify %}
         <span id="calendarify">{% calendarify year month event_list %}</span>
@@ -79,8 +80,27 @@
           {% endfor %}
         </ul>
       {% endif %}
-
     </div>
+
+    <div class="container">
+      <div class="add-friend">
+        <form action="/accounts/add-friend">
+          <button class="add-friend-button">Add Friend</button>
+        </form>
+      </div>
+    </div>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <p {% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
+            {% if message.extra_tags == "add-friend-error" %}
+              {{ message }}
+            {% endif %}
+        </p>
+        {% endfor %}
+      </ul>
+    {% endif %}
 
     <script src="/static/cal/bootstrap/js/bootstrap.min.js"></script>
   </body>

@@ -1,11 +1,22 @@
 from django.db import models
-from cal.models import Events
-import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
 
-class Accounts(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    email = models.EmailField(null=False, unique=True)
-    password = models.CharField(null=False, max_length=254)
-    friends = models.ManyToManyField("self")
-    username = models.CharField(max_length=254, null=True)
-    events = models.ForeignKey(Events, null=True)
+#Extension of User model to allow a user to have 'friends' via a ManyToManyField
+class Account(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    friends = models.ManyToManyField(
+        'self', related_name=user)
+    username = models.CharField(max_length=100, null=True)
+
+#Allows returned object to be seen as username
+    def __str__ (self):
+        return self.username
+
+#Ensure an Account object is made whenever a User object is made
+@receiver(post_save, sender=User)
+def create_profile(sender, **kwargs):
+    if kwargs.get("created", False):
+        Account.objects.get_or_create(user=kwargs.get('instance'),
+                username=kwargs.get('instance').username)

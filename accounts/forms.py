@@ -23,3 +23,6 @@ class NewUserForm(ModelForm):
             if password != confirm_password:
                 raise forms.ValidationError("Your Passwords Do Not Match!")
         return cleaned_data
+
+class AddFriendForm(forms.Form):
+    username = forms.CharField()

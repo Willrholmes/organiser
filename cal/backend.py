@@ -1,6 +1,9 @@
 from datetime import date, datetime
 from calendar import monthrange
 from cal.models import Events
+from itertools import chain
+from django.contrib.auth.models import User
+from accounts.models import Account
 
 def monthdict(_date):
     month, year = _date.month, _date.year
@@ -30,11 +33,16 @@ def calendar(_date, request):
         date_dict['year'], date_dict['month'])[1])
     user = request.user
     if user.is_authenticated:
-        event_list = Events.objects.filter(user=user).filter(
+        event_list_1 = Events.objects.filter(creator=user).filter(
             start_date__gte=str(from_month_date)).filter(start_date__lte=str(
             to_month_date))
+        attendee = Account.objects.get(user=user)
+        event_list_2 = Events.objects.filter(attendees=attendee).filter(
+            start_date__gte=str(from_month_date)).filter(start_date__lte=str(
+            to_month_date))
+        event_list = list(chain(event_list_1, event_list_2))
     else:
-        event_list = Events.objects.filter(user=None).filter(
+        event_list = Events.objects.filter(creator=None).filter(
             start_date__gte=str(from_month_date)).filter(start_date__lte=str(
             to_month_date))
     return {
@@ -46,3 +54,19 @@ def calendar(_date, request):
         'nextmonth':date_dict['next_month'],
         'nextyear':date_dict['next_year'],
         }
+
+def date_format(form):
+    _date = form.data['start_date'].split("/")
+    a = [int(i) for i in _date]
+    _date_ = date(a[2], a[1], a[0])
+    return _date_
+
+def user_or_attendee(user, instance):
+    if instance.creator == user:
+        return True
+    for e in instance.attendees.all():
+        print(e, user.username)
+        if str(e) == str(user.username):
+            return True
+    else:
+        return False

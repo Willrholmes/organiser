@@ -1,11 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from accounts.forms import NewUserForm
+from accounts.forms import NewUserForm, AddFriendForm
+from accounts.models import Account
 from unittest.mock import patch, call
-from django.contrib.auth.models import User
+from cal.tests import LoggedInTestCase
 import uuid
 
-class userTest(TestCase):
+class UserTest(TestCase):
 
     def test_create_account(self):
         new_account = User.objects.create(
@@ -23,7 +24,7 @@ class userTest(TestCase):
         self.assertIn("login", html)
         self.assertIn("Create Account", html)
 
-class userFormTest(TestCase):
+class CreateUserFormTest(TestCase):
 
     def test_create_account_page(self):
         response = self.client.get("/accounts/new-account/")
@@ -54,20 +55,40 @@ class userFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("Your Passwords Do Not Match!", form.errors['__all__'])
 
-class loginTest(TestCase):
+class loginTest(LoggedInTestCase):
 
     def test_wrong_password_login(self):
-        User.objects.create_user(
-            email="test@test.com",
-            password="password",
-            username="Test User"
-        )
-        response = self.client.login(username="Test User", password="passwor")
+        response = self.client.login(username="Test_User", password="passwor")
         self.assertEqual(response, False)
         response = self.client.login(username="Anon User", password="password")
         self.assertEqual(response, False)
+        response = self.client.login(username="Test_User", password="password")
+        self.assertEqual(response, True)
 
     def test_user(self):
-        user = User.objects.create_user('Test User', 'test@test.com', 'test')
+        user = User.objects.get(username="Test_User")
+        Account_user = Account.objects.get(user=user)
         self.assertEqual(user.email, "test@test.com")
-        self.assertEqual(user.username, "Test User")
+        self.assertEqual(user.username, "Test_User")
+        self.assertEqual(Account_user.user, user)
+
+class multipleUserTest(LoggedInTestCase):
+
+    def test_add_friend_form_page(self):
+        response = self.client.get("/accounts/add-friend/")
+        html = response.content.decode('utf8')
+        self.assertIn('Username', html)
+
+    def test_add_friend(self):
+        user = User.objects.get(username="Test_User")
+        account_user = Account.objects.get(user=user)
+        user_2 = User.objects.create_user(
+            email="test2@test.com",
+            username="Test_User2",
+            password="password2",
+            )
+        account_user2 = Account.objects.get(user=user_2)
+
+        account_user2.friends.add(account_user)
+        friend = list(account_user2.friends.all())[0]
+        self.assertEqual(friend, account_user)

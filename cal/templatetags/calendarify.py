@@ -6,7 +6,7 @@ from itertools import groupby
 from django.utils.html import conditional_escape as esc
 
 register = template.Library()
- 
+
 def do_month_calendarify(parser, token):
     # Take the tag input from the template and format
     # Template syntax is {% calendarify year month %}
@@ -56,8 +56,8 @@ class EventCalendar(HTMLCalendar):
                 body = ['<ul>']
                 for event in self.events[day]:
                     body.append('<li>')
-                    body.append('<a id="event" href="%s">'
-                                    % event.get_absolute_url())
+                    body.append('<a id="event_%d" href="%s">'
+                                    % (event.id, event.get_absolute_url()))
                     body.append(esc(event.title))
                     body.append('</a></li>')
                 body.append('</ul>')

@@ -69,11 +69,10 @@ class CalendarTest(LoginForTest):
         self.assertEqual(user, "Logged in as Testuser")
 
     def test_create_new_event(self):
-
         # Open new event setup
         self.browser.find_element_by_class_name("new_event").click()
         wait_for(
-            lambda: self.browser.find_element_by_class_name("new-event-form")
+            lambda: self.browser.find_element_by_class_name("form-class")
         )
 
         _today = date.today()
@@ -89,7 +88,7 @@ class CalendarTest(LoginForTest):
             lambda: self.browser.find_element_by_id("calendarify")
         )
 
-        self.browser.find_element_by_id("event").click()
+        self.browser.find_element_by_id("event_1").click()
 
         wait_for(
             lambda: self.browser.find_element_by_id("id_start_date")
@@ -106,7 +105,7 @@ class CalendarTest(LoginForTest):
             lambda: self.browser.find_element_by_id("calendarify")
         )
 
-        event = self.browser.find_element_by_id("event").text
+        event = self.browser.find_element_by_id("event_1").text
 
         self.assertEqual(event, "Change event")
 
@@ -143,9 +142,83 @@ class CalendarTest(LoginForTest):
 
 class accountsTest(LoginForTest):
 
-    def test_create_login_test(self):
-        user = self.browser.find_element_by_class_name("navbar-text").text
-        self.assertEqual(user, "Logged in as Testuser")
+    def test_users_can_make_friends(self):
+        User.objects.create_user(email="test2@test.com",
+            username="Testuser2",
+            password="password2")
+
+        self.browser.find_element_by_class_name("add-friend-button").click()
+        wait_for(
+            lambda: self.browser.find_element_by_class_name("form-class")
+        )
+
+        self.browser.find_element_by_id("id_username").send_keys(
+            "Testuser2"
+        )
+        self.browser.find_element_by_id("submit").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("calendarify")
+        )
+
+
+    def test_users_can_invite_other_users_to_events(self):
+        User.objects.create_user(email="test2@test.com",
+            username="Testuser2",
+            password="password2")
+
+        self.browser.find_element_by_class_name("add-friend-button").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_class_name("form-class")
+        )
+
+        self.browser.find_element_by_id("id_username").send_keys(
+            "Testuser2"
+        )
+        self.browser.find_element_by_id("submit").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("calendarify")
+        )
+
+        self.browser.find_element_by_class_name("new_event").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_class_name("form-class")
+        )
+
+        _today = date.today()
+        date_1 = _today + timedelta(+1)
+
+        # Input details
+        self.browser.find_element_by_id("id_end_date").send_keys(str(date_1))
+        self.browser.find_element_by_id("id_title").send_keys("Event 1")
+        self.browser.find_element_by_id("id_attendees_0").click()
+        self.browser.find_element_by_id("submit").click()
+
+        # Find event
+        wait_for(
+            lambda: self.browser.find_element_by_id("calendarify")
+        )
+
+        self.browser.find_element_by_id("logout").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("username")
+        )
+
+        self.browser.find_element_by_id("username").send_keys("Testuser2")
+        self.browser.find_element_by_id("password").send_keys("password2")
+        self.browser.find_element_by_id("submit").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_class_name("navbar-text")
+        )
+
+        event = self.browser.find_element_by_id("event_1").text
+
+        self.assertEqual(event, "Event 1")
 
 if __name__ == "__main__":
     unittest.main()
