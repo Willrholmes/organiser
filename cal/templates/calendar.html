@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Calendar - Home</title>
-    <link href="/static/cal/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/cal/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/static/cal/calendar.css" rel="stylesheet">
 
   </head>
@@ -17,21 +17,47 @@
           <ul class='nav navbar-nav navbar-right'>
             <li class="navbar-text">Logged in as {{ request.user.username }}</li>
             <li><a id="logout" href="{% url 'accounts:logout' %}">Log out</a></li>
-          </ul>
-      {% else %}
-        <form method="post" action="{% url 'accounts:login' %}">
-          {% csrf_token %}
-          <input id="username" name="username" type="text" placeholder="Username">
-          <input id="password" name="password" type="password" placeholder="Password">
-          <input id = "submit" type="submit" value="login" />
-        </form>
 
+            <div clas="container">
+              <div class="right">
+                <form action="/accounts/add-friend">
+                  <button class="btn-primary" id="add-friend">Add Friend</button>
+                </form>
+              </div>
+            </div>
+
+            {% if messages %}
+              <ul class="alert-danger">
+                {% for message in messages %}
+                <p {% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
+                    {% if message.extra_tags == "add-friend-error" %}
+                      {{ message }}
+                    {% endif %}
+                </p>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+          </ul>
+
+      {% else %}
+        <form class="navbar-form navbar-right" method="post" action="{% url 'accounts:login' %}">
+          {% csrf_token %}
+          <input id="inputUsername" class="form-control" name="username"
+            type="text" placeholder="Username">
+          <input id="inputPassword" class="form-control" name="password"
+            type="password" placeholder="Password">
+          <button class="btn-primary" id="login-submit" type="submit">Sign in</button>
+        </form>
+      </div>
+
+      <div class="navbar-right pad-right">
         <div>
           <a class="new-account" href="/accounts/new-account/">Create Account</a>
         </div>
 
         {% if messages %}
-          <ul class="messages">
+          <ul class="alert-danger">
             {% for message in messages %}
             <p{% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
               {% if message.extra_tags == "login-error" %}
@@ -43,34 +69,37 @@
         {% endif %}
       {% endif %}
     </div>
-    <div>
-      <h1 class="welcome">{{ title }}</h1>
-    </div>
 
     <div class="container">
-      <div class="calendar">
-        <div class="navigation">
-          <form action="{% url 'cal:another-month' lastmonth lastyear %}">
-            <button class="last_month">Previous Month</button>
-          </form>
-          <form action="{% url 'cal:another-month' nextmonth nextyear %}">
-            <button class="next_month">Next Month</button>
-          </form>
-        </div>
-      </div>
-
-      <div>
+      <div class="calendar-table">
         {% load calendarify %}
         <span id="calendarify">{% calendarify year month event_list %}</span>
       </div>
-      <div class="new_event_div">
-        <form action="/cal/newevent/" method="get">
-          <button class="new_event">Create New Event</button>
+    </div>
+
+    <div class="container">
+      <div class="left">
+        <form action="{% url 'cal:another-month' lastmonth lastyear %}">
+          <button class="btn-primary" id="last_month">Previous Month</button>
         </form>
       </div>
+      <div class="right">
+        <form action="{% url 'cal:another-month' nextmonth nextyear %}">
+          <button class="btn-primary" id="next_month">Next Month</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="new_event_div">
+        <form action="/cal/newevent/" method="get">
+          <button class="btn-primary" id="new_event">Create New Event</button>
+        </form>
+      </div>
+    </div>
 
       {% if messages %}
-        <ul class="messages">
+        <ul class="alert-danger">
           {% for message in messages %}
           <p {% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
               {% if message.extra_tags == "event-error" %}
@@ -82,26 +111,7 @@
       {% endif %}
     </div>
 
-    <div class="container">
-      <div class="add-friend">
-        <form action="/accounts/add-friend">
-          <button class="add-friend-button">Add Friend</button>
-        </form>
-      </div>
-    </div>
-
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-        <p {% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
-            {% if message.extra_tags == "add-friend-error" %}
-              {{ message }}
-            {% endif %}
-        </p>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
     <script src="/static/cal/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../jquery-3.1.1.min.js"></script>
   </body>
 </html>

@@ -6,7 +6,7 @@ from cal.forms import EventForm
 from django.contrib.auth.models import User
 from cal.models import Events
 from accounts.models import Account
-from cal.backend import calendar, date_format, user_or_attendee
+from cal.backend import calendar, date_format, user_or_attendee, add_end_date
 
 def home(request, month=None, year=None):
     if month == None:
@@ -23,12 +23,11 @@ def newevent(request):
         if request.method == 'POST':
             form = EventForm(data=request.POST)
             date = date_format(form)
-            cal_title = "%s %s" % (date.strftime("%B"), date.strftime("%Y"))
             cal = calendar(date, request)
-            cal['title'] = cal_title
             if form.is_valid():
                 event = form.save(commit=False)
                 event.creator = request.user
+                event.end_date = add_end_date(event.end_date, event.start_date)
                 form.save()
                 return redirect('cal:home')
         else:
@@ -37,8 +36,7 @@ def newevent(request):
     else:
         messages.warning(request, "Please login to create an event!",
             extra_tags="event-error")
-    return HttpResponse(str(form.errors))
-    #return redirect('cal:home')
+    return redirect('cal:home')
 
 def viewevent(request, id):
     instance = Events.objects.get(id=id)
@@ -46,12 +44,11 @@ def viewevent(request, id):
         if request.method == 'POST':
             form = EventForm(data=request.POST, instance=instance)
             date = date_format(form)
-            title = "%s %s" % (date.strftime("%B"), date.strftime("%Y"))
             cal = calendar(date, request)
-            cal['title'] = title
             if form.is_valid():
                 event = form.save(commit=False)
                 event.creator = request.user
+                event.end_date = add_end_date(event.end_date, event.start_date)
                 form.save()
                 return redirect('cal:home')
         else:

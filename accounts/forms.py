@@ -4,14 +4,24 @@ from django import forms
 
 class NewUserForm(ModelForm):
     password = forms.CharField(
-        widget=forms.PasswordInput(), label="Password*")
+        widget=forms.PasswordInput(attrs={
+            'class':"form-control", 'placeholder':"Password*"}))
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(), label="Confirm Password*")
+        widget=forms.PasswordInput(attrs={
+            'class':"form-control", 'placeholder':"Confirm Password*"}))
 
     class Meta:
         model = User
         fields = ['email', 'username', 'password']
         labels = {'email':"Email*"}
+        widgets = {'email':forms.TextInput(attrs={
+            'class':'form-control',
+            'placeholder':'Email'}),
+            'username':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':"Username"
+            }),
+        }
 
     def clean(self):
         cleaned_data = super(NewUserForm, self).clean()
@@ -25,4 +35,8 @@ class NewUserForm(ModelForm):
         return cleaned_data
 
 class AddFriendForm(forms.Form):
-    username = forms.CharField()
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class':"form-control",
+            'placeholder':"Username",
+        }))

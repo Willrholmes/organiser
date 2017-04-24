@@ -6,32 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>{% block title %}{% endblock %}</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/cal/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/cal/bootstrap-datetimepicker.css">
+    <link rel="stylesheet" href="/static/cal/calendar.css" rel="stylesheet">
 
+    <script type="text/javascript" src="/static/cal/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/static/cal/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/cal/moment.js"></script>
+
+    <script type="text/javascript" src="/static/cal/bootstrap-datetimepicker.min.js"></script>
   </head>
-  <h1>{% block header_text %}{% endblock %}</h>
+
   <body>
-      {% if form.errors %}
-        {% for field in form %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger">
-              <strong>{{ error|escape }}</strong>
+    <h2 class="centre-head">{% block header_text %}{% endblock %}</h2>
+    <div class="container">
+      <div class="centre-form">
+        <div class="row">
+          <div class='col-sm-8'>
+            {% if form.errors %}
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                  </div>
+                {% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <div class="form-group">
+              <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                  <div class="control-group">
+                    <label class="control-label">{{ field.label }}</label>
+                    <div class="controls">{{ field }}
+                      {% if field.help_text %}
+                        <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+                <div>
+                  <p></p>
+                  <button class="btn-primary btn-block" id="form-submit" type="submit">Submit</button>
+                </div>
+              </form>
             </div>
-          {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-          <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
           </div>
-        {% endfor %}
-      {% endif %}
+        </div>
+      </div>
+    </div>
 
-      <form class="form-class" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input id="submit" type="submit" value="submit"/>
-      </form>
-
-      <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(function () {
+        $('.datetimepicker4').datetimepicker({
+          format: 'DD/MM/YYYY'
+        });
+      });
+      $(function () {
+        $('.datetimepicker3').datetimepicker({
+          format: 'HH:mm',
+        });
+      });
+    </script>
   </body>
 </html>

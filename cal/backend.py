@@ -34,11 +34,11 @@ def calendar(_date, request):
     user = request.user
     if user.is_authenticated:
         event_list_1 = Events.objects.filter(creator=user).filter(
-            start_date__gte=str(from_month_date)).filter(start_date__lte=str(
+            end_date__gte=str(from_month_date)).filter(start_date__lte=str(
             to_month_date))
         attendee = Account.objects.get(user=user)
         event_list_2 = Events.objects.filter(attendees=attendee).filter(
-            start_date__gte=str(from_month_date)).filter(start_date__lte=str(
+            end_date__gte=str(from_month_date)).filter(start_date__lte=str(
             to_month_date))
         event_list = list(chain(event_list_1, event_list_2))
     else:
@@ -70,3 +70,9 @@ def user_or_attendee(user, instance):
             return True
     else:
         return False
+
+def add_end_date(end_date, start_date):
+    if end_date == None:
+        return str(start_date)
+    else:
+        return str(end_date)

@@ -29,7 +29,7 @@ class CreateUserFormTest(TestCase):
     def test_create_account_page(self):
         response = self.client.get("/accounts/new-account/")
         html = response.content.decode('utf8')
-        self.assertIn("Email*", html)
+        self.assertIn("Email", html)
         self.assertIn("Password*", html)
         self.assertIn("Confirm Password*", html)
         self.assertIn("Username", html)
