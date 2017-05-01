@@ -58,16 +58,8 @@ class EventsTestCase(LoggedInTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Title", html)
-        self.assertIn("Start date", html)
+        self.assertIn("Start Date", html)
         self.assertIn("submit", html)
-
-    def test_events_show_in_calendar(self):
-        new_event = Events.objects.create(
-            title="Event 1", start_date=_date, description="Testing..."
-            )
-        response = self.client.get('/cal/')
-        html = response.content.decode('utf8')
-        self.assertIn(new_event.title, html)
 
     def test_event_view(self):
         new_event = Events.objects.create(
@@ -75,8 +67,19 @@ class EventsTestCase(LoggedInTestCase):
             )
         response = self.client.get('/cal/events/1/')
         html = response.content.decode('utf8')
+        self.assertEqual(response.status_code, 200)
         self.assertIn("Event 1", html)
         self.assertIn("Testing...", html)
+
+    def test_delete_event(self):
+        new_event = Events.objects.create(
+            title="Event 1", start_date=_date, description="Testing..."
+            )
+        new_event.save()
+        Events.objects.get(title="Event 1").delete()
+        events = Events.objects.filter(title="Event 1")
+        self.assertEqual(str(events), '<QuerySet []>')
+
 
     def test_cannot_view_non_related_user_event(self):
         new_event = Events.objects.create(
@@ -133,14 +136,16 @@ class InviteOtherUsersTest(LoggedInTestCase):
             password="password2",
         )
         user_2.save()
+        user = User.objects.get(username="Test_User")
+        account = Account.objects.get(user=user)
         account_2 = Account.objects.get(user=user_2)
+        account_2.friends.add(account)
+        account_2.save()
         event = Events.objects.create(
             title="Event 1",
             start_date=_date,
             description="Testing...",
             )
         event.attendees.add(account_2)
-        user = self.client.login(username="Test_User2", password="password2")
-        response = self.client.get("/cal/")
-        html = response.content.decode('utf8')
-        self.assertIn("Event 1", html)
+        event.save()
+        self.assertEqual(event, Events.objects.filter(attendees=account_2)[0])

@@ -49,13 +49,6 @@ class LoginForTest(FunctionalTest):
             lambda: self.browser.find_element_by_id("calendarify")
         )
 
-        self.browser.find_element_by_id("inputUsername").send_keys("Testuser")
-        self.browser.find_element_by_id("inputPassword").send_keys("password")
-        self.browser.find_element_by_id("login-submit").click()
-
-        wait_for(
-            lambda: self.browser.find_element_by_class_name("navbar-text")
-        )
 
 class CalendarTest(LoginForTest):
 
@@ -72,7 +65,7 @@ class CalendarTest(LoginForTest):
         # Open new event setup
         self.browser.find_element_by_id("new_event").click()
         wait_for(
-            lambda: self.browser.find_element_by_class_name("form-group")
+            lambda: self.browser.find_element_by_class_name("form-inline")
         )
 
         _today = date.today()
@@ -89,6 +82,8 @@ class CalendarTest(LoginForTest):
         )
 
         self.browser.find_element_by_id("event_1").click()
+
+        time.sleep(5)
 
         wait_for(
             lambda: self.browser.find_element_by_id("id_start_date")
@@ -108,6 +103,24 @@ class CalendarTest(LoginForTest):
         event = self.browser.find_element_by_id("event_1").text
 
         self.assertEqual(event, "Change event")
+
+        self.browser.find_element_by_id("event_1").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("id_start_date")
+        )
+
+        self.browser.find_element_by_id("event-delete").click()
+
+        wait_for(
+            lambda: self.browser.find_element_by_id("calendarify")
+        )
+
+        try:
+            event = self.browser.find_element_by_id("event_1").text
+            return "%s element not deleted" % (event)
+        except:
+            None
 
     def test_next_last_month(self):
         self.browser.find_element_by_id("next_month").click()
@@ -183,7 +196,7 @@ class AccountsTest(LoginForTest):
         self.browser.find_element_by_id("new_event").click()
 
         wait_for(
-            lambda: self.browser.find_element_by_class_name("form-group")
+            lambda: self.browser.find_element_by_class_name("form-inline")
         )
 
         _today = date.today()

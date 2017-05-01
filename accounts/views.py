@@ -17,6 +17,7 @@ def NewUser(request):
         if form.is_valid():
             user = User.objects.create_user(username, email, password)
             user.save()
+            login(request, user)
             return redirect('cal:home')
     else:
         form = NewUserForm()

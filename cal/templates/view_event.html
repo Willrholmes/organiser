@@ -2,4 +2,8 @@
 
 {% block title %}View Event{% endblock %}
 
-{% block header_text %}View/Edit Event{% endblock %}
+{% block header_text %}Edit Event{% endblock %}
+
+{% block delete_button %}
+<a class="btn btn-primary btn-md" id="event-delete" href="{% url 'cal:delete_event' id=id %}">Delete</a>
+{% endblock %}

@@ -61,19 +61,9 @@ class EventCalendar(HTMLCalendar):
                         body.append(
                             "<time class='time'>%s </time>" % (
                             event.start_time.strftime("%H:%M")))
-                    if event.end_time != None and event.end_date == date(
-                        self.year, self.month, day):
-                        if event.start_time != None and event.start_date ==date(
-                            self.year, self.month, day):
-                            body.append(
-                                "<time class='time'>- %s </time>" % (
-                                event.end_time.strftime("%H:%M")))
-                        else:
-                            body.append(
-                            "<time class='time'>%s </time>" % (
-                            event.end_time.strftime("%H:%M")))
-                    body.append('<a id="event_%s" href="%s">'
-                        % (event.id, event.get_absolute_url()))
+                    body.append(
+                        '<a class="event-class" id="event_%s" href="%s">'% (
+                        event.id, event.get_absolute_url()))
                     body.append(esc(event.title))
                     body.append('</a></li>')
                 body.append('</ul>')

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/cal/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/cal/bootstrap-datetimepicker.css">
     <link rel="stylesheet" href="/static/cal/calendar.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Handlee" rel="stylesheet">
 
     <script type="text/javascript" src="/static/cal/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="/static/cal/bootstrap/js/bootstrap.min.js"></script>
@@ -38,25 +39,73 @@
               {% endfor %}
             {% endif %}
 
-            <div class="form-group">
-              <form method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                  <div class="control-group">
-                    <label class="control-label">{{ field.label }}</label>
-                    <div class="controls">{{ field }}
-                      {% if field.help_text %}
-                        <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                      {% endif %}
-                    </div>
-                  </div>
-                {% endfor %}
-                <div>
-                  <p></p>
-                  <button class="btn-primary btn-block" id="form-submit" type="submit">Submit</button>
+            <form class="form-inline" method="post">
+              {% csrf_token %}
+
+              <div class="wrapper">
+                <div class="fieldWrapper form-inline floatLeft">
+                  <label for="{{ form.title.id_for_label }}">Title</label>
+                  <li>{{ form.title }}</li>
                 </div>
-              </form>
-            </div>
+                <div class="fieldWrapper form-inline floatRight">
+                  <label for="{{ form.location.id_for_label }}">Location</label>
+                  <li>{{ form.location }}</li>
+                </div>
+              </div>
+
+              <div class="wrapper">
+                <div class="fieldWrapper form-inline floatLeft">
+                  <label for="{{ form.start_date.id_for_label }}">Start Date</label>
+                  <li>{{ form.start_date }}</li>
+                </div>
+                <div class="fieldWrapper form-inline floatRight">
+                  <label for="{{ form.end_time.id_for_label }}">Start Time</label>
+                  <li>{{ form.end_time}}</li>
+                </div>
+              </div>
+
+              <div class="wrapper">
+                <div class="fieldWrapper form-inline floatLeft">
+                  <label for="{{ form.end_date.id_for_label }}">End Date</label>
+                  <li>{{ form.end_date }}</li>
+                </div>
+                <div class="fieldWrapper form-inline floatRight">
+                  <label for="{{ form.end_time.id_for_label }}">End Time</label>
+                  <li>{{ form.end_time}}</li>
+                </div>
+              </div>
+
+              <div class="fieldWrapper">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                <li>{{ form.description }}</li>
+              </div>
+
+              <div class="wrapper">
+                <div class="fieldWrapper form-inline floatLeft">
+                  <label for="{{ form.attendees.id_for_label }}">Attendees</label>
+                  <li>{{ form.attendees }}</li>
+                </div>
+                <div class="fieldWrapper form-inline floatRight">
+                  <p></p>
+                  <button class="btn btn-primary btn-md" id="form-submit" type="submit">Submit</button>
+                  {% block delete_button %}
+                  {% endblock %}
+                </div>
+              </div>
+            </form>
+
+            {% if messages %}
+            <ul class="alert-danger">
+              {% for message in messages %}
+              <p {% if message.ERROR %} class="{{ message.tags }}" {% endif %}>
+                {% if message.extra_tags == "event-error" %}
+                {{ message }}
+                {% endif %}
+              </p>
+              {% endfor %}
+            </ul>
+            {% endif %}
+
           </div>
         </div>
       </div>
