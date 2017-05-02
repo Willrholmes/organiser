@@ -72,5 +72,5 @@ def delete_event(request, id):
         date = instance.start_date
         cal = calendar(date, request)
         instance.delete()
-        return HttpResponseRedirect(reverse('cal:another-month', args=[
-            date.month, date.year], current_app='cal'))
+    return HttpResponseRedirect(reverse('cal:another-month', args=[
+        date.month, date.year], current_app='cal'))
