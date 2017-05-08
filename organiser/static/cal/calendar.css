@@ -69,8 +69,8 @@ th.month {
 }
 
 .dayNumber, .dayNumberNoReadings {
-  v
   list-style-type: none;
+  vertical-align: top;
 }
 
 .centre-form{
@@ -129,4 +129,8 @@ th.month {
 .navbar-default {
   border-color: white;
   background-color: white;
+}
+
+.align-top{
+  vertical-align: top;
 }

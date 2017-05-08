@@ -48,7 +48,7 @@ class EventCalendar(HTMLCalendar):
     def formatday(self, day, weekday):
         if day != 0:
             cssid = self.cssclasses[weekday]
-            cssclass = "col-md-1 table-bordered"
+            cssclass = "col-md-1 table-bordered align-top"
             if date.today() == date(self.year, self.month, day):
                 cssid += ' today'
             if day in self.events:
@@ -69,12 +69,13 @@ class EventCalendar(HTMLCalendar):
                 body.append('</ul>')
                 return self.day_cell(
                     cssclass, cssid,
-                    '<span class="dayNumber">%d</span> %s'
-                    % (day, ''.join(body)))
+                    '<span class="dayNumber">%d</span> %s'% (
+                    day, ''.join(body)))
             return self.day_cell(
                 cssclass, cssid, '<span class="dayNumberNoReadings">%d</span>'
                 % (day))
-        return self.day_cell('col-md-1 table-bordered', 'noday', '&nbsp;')
+        return self.day_cell(
+            'col-md-1 table-bordered', 'noday', '&nbsp;')
 
     def formatmonth(self, year, month):
         self.year, self.month = year, month
@@ -106,6 +107,9 @@ class EventCalendar(HTMLCalendar):
         return return_dict
 
     def day_cell(self, cssclass, cssid, body):
-        return '<td class="%s" id="%s">%s</td>' % (cssclass, cssid, body)
+        return """
+            <td class="%s" id="%s" onClick="document.location.href=
+            \'/cal/newevent/\';">%s</td>
+                """ % (cssclass, cssid, body)
 
 register.tag('calendarify', do_month_calendarify)
