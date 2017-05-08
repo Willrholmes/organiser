@@ -16,7 +16,7 @@
   </head>
   <body>
     <div class='container'>
-        <div class='navbar-collapse collapse'>
+        <div class='navbar-default nav'>
           <ul class="nav navbar-nav navbar-left">
             <div class='btn-group'>
               <div class='floatLeft col-md-*'>
@@ -54,6 +54,7 @@
 
             {% else %}
             <ul class='nav navbar-nav navbar-right'>
+              <li>
               <form class="navbar-form navbar-right" method="post" action="{% url 'accounts:login' %}">
                 {% csrf_token %}
                 <input id="inputUsername" class="form-control" name="username"
@@ -62,13 +63,17 @@
                   type="password" placeholder="Password">
                 <button class="btn btn-primary btn-md" id="login-submit" type="submit">Sign in</button>
               </form>
+              </li>
 
-            <div class="navbar-right pad-right">
-              <div>
-                <a class="new-account" href="/accounts/new-account/">Create Account</a>
-              </div>
+              <ul>
+                <li>
+                <div>
+                  <a class="new-account" href="/accounts/new-account/">Create Account</a>
+                </div>
+                </li>
+              </ul>
+
             </div>
-          </div>
           {% endif %}
           </ul>
         </div>
@@ -98,8 +103,6 @@
             </ul>
             {% endif %}
         </div>
-
-
 
     <div class="container">
       <div class="calendar-table">

@@ -12,8 +12,9 @@ li {
     list-style-type: none;
 }
 
-ul {
-  padding-left: 20px;
+ul.day {
+  padding-left: 0px;
+  text-align: center;
 }
 
 .calendar-table {
@@ -25,7 +26,6 @@ table-layout: fixed;
 .col-md-1 {
   width: 14.33333333%;
   background-color: #eaebed;
-  overflow-y: scroll;
   padding: 3px;
   border-color: white;
 }
@@ -65,10 +65,11 @@ th.month {
 
 .pad-right {
   padding-right: 8%;
+  display: block;
 }
 
 .dayNumber, .dayNumberNoReadings {
-  text-align: center;
+  v
   list-style-type: none;
 }
 
@@ -121,6 +122,11 @@ th.month {
   box-shadow: 1px 1px 1px 1px grey;
 }
 
-.btn-primary:hover{
+.btn-primary:hover {
    background: #019499;
+}
+
+.navbar-default {
+  border-color: white;
+  background-color: white;
 }

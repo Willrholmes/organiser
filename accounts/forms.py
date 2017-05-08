@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from accounts.models import Account
 from django.contrib.auth.models import User
 from django import forms
 
@@ -40,3 +41,12 @@ class AddFriendForm(forms.Form):
             'class':"form-control",
             'placeholder':"Username",
         }))
+
+    def clean(self):
+        cleaned_data = super(AddFriendForm, self).clean()
+
+        username = cleaned_data.get('username')
+
+        if not Account.objects.filter(username=username).exists():
+            raise forms.ValidationError("This account does not exist!")
+        return cleaned_data

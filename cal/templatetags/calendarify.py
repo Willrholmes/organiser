@@ -53,7 +53,7 @@ class EventCalendar(HTMLCalendar):
                 cssid += ' today'
             if day in self.events:
                 cssid += ' filled'
-                body = ['<ul>']
+                body = ['<ul class="day">']
                 for event in self.events[day]:
                     body.append('<li>')
                     if event.start_time != None and event.start_date == date(

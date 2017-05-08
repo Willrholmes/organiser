@@ -58,7 +58,4 @@ def AddFriend(request):
         else:
             form = AddFriendForm()
         return render(request, 'addfriend.html', {'form':form})
-    else:
-        messages.error(request, "Please login to add a friend!",
-                        extra_tags="add-friend-error")
     return redirect('cal:home')
