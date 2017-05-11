@@ -38,9 +38,11 @@ def login_view(request):
             return redirect('/cal/')
         else:
             #If authentication fails an error message will be displayed
-            messages.error(request,
+            messages.error(
+                request,
                 "Your username and password didn't match. Please try again.",
-                extra_tags='login-error')
+                extra_tags='login-error'
+                )
             return redirect('/cal/')
     return redirect('/cal/')
 

@@ -41,8 +41,8 @@ class LoginForTest(FunctionalTest):
         self.browser.find_element_by_id("id_email").send_keys("test@test.com")
         self.browser.find_element_by_id("id_username").send_keys("Testuser")
         self.browser.find_element_by_id("id_password").send_keys("password")
-        self.browser.find_element_by_id("id_confirm_password").send_keys(
-                                        "password")
+        self.browser.find_element_by_id(
+            "id_confirm_password").send_keys("password")
         self.browser.find_element_by_id("submit").click()
 
         wait_for(
@@ -56,7 +56,8 @@ class CalendarTest(LoginForTest):
         self.assertIn('Calendar', self.browser.title)
 
         month = datetime.now().strftime("%B")
-        home_month = self.browser.find_element_by_class_name("calendar-table").text
+        home_month = self.browser.find_element_by_class_name(
+            "calendar-table").text
         self.assertIn(month, home_month)
         user = self.browser.find_element_by_class_name("navbar-text").text
         self.assertEqual(user, "Logged in as Testuser")
@@ -154,9 +155,11 @@ class CalendarTest(LoginForTest):
 class AccountsTest(LoginForTest):
 
     def test_users_can_make_friends(self):
-        User.objects.create_user(email="test2@test.com",
+        User.objects.create_user(
+            email="test2@test.com",
             username="Testuser2",
-            password="password2")
+            password="password2"
+            )
 
         self.browser.find_element_by_id("add-friend").click()
         wait_for(
@@ -174,9 +177,11 @@ class AccountsTest(LoginForTest):
 
 
     def test_users_can_invite_other_users_to_events(self):
-        User.objects.create_user(email="test2@test.com",
+        User.objects.create_user(
+            email="test2@test.com",
             username="Testuser2",
-            password="password2")
+            password="password2"
+            )
 
         self.browser.find_element_by_id("add-friend").click()
 

@@ -33,24 +33,25 @@ def monthdict(_date):
 def calendar(_date, request):
     date_dict = monthdict(_date)
     from_month_date = date(date_dict['year'], date_dict['month'], 1)
-    to_month_date = date(date_dict['year'], date_dict['month'], monthrange(
-        date_dict['year'], date_dict['month'])[1])
+    to_month_date = date(
+        date_dict['year'], date_dict['month'],
+        monthrange(date_dict['year'], date_dict['month'])[1])
     user = request.user
     #Pulls a list of events for a given user on a given month - whether they
     # be the creator of the event or an attendee.
     if user.is_authenticated:
-        event_list_1 = Events.objects.filter(creator=user).filter(
-            end_date__gte=str(from_month_date)).filter(start_date__lte=str(
-            to_month_date))
+        event_list_1 = Events.objects.filter(
+            creator=user).filter(end_date__gte=str(from_month_date)).filter(
+                start_date__lte=str(to_month_date))
         attendee = Account.objects.get(user=user)
-        event_list_2 = Events.objects.filter(attendees=attendee).filter(
-            end_date__gte=str(from_month_date)).filter(start_date__lte=str(
-            to_month_date))
+        event_list_2 = Events.objects.filter(
+            attendees=attendee).filter(end_date__gte=str(
+                from_month_date)).filter(start_date__lte=str(to_month_date))
         event_list = list(chain(event_list_1, event_list_2))
     else:
-        event_list = Events.objects.filter(creator=None).filter(
-            start_date__gte=str(from_month_date)).filter(start_date__lte=str(
-            to_month_date))
+        event_list = Events.objects.filter(
+            creator=None).filter(start_date__gte=str(from_month_date)).filter(
+                start_date__lte=str(to_month_date))
     return {
         'month':date_dict['month'],
         'year':date_dict['year'],

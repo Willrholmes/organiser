@@ -37,8 +37,7 @@ class CalendarifyNode(template.Node):
             my_month = self.month.resolve(context)
             my_event_list = self.event_list.resolve(context)
             cal = EventCalendar(my_event_list, my_month)
-            return cal.formatmonth(
-                int(my_year), int(my_month))
+            return cal.formatmonth(int(my_year), int(my_month))
         except ValueError:
             return "Calendar requires month, year and events list input"
 
@@ -65,27 +64,26 @@ class EventCalendar(HTMLCalendar):
                     body.append('<li>')
                     #Adds start time if event only on one day.
                     if event.start_time != None and event.start_date == date(
-                        self.year, self.month, day):
+                            self.year, self.month, day):
                         body.append(
                             "<time class='time'>%s </time>" % (
-                            event.start_time.strftime("%H:%M")))
+                                event.start_time.strftime("%H:%M")))
                     #Utilises reverse function in model to allow events to lead
                     #to event view URL.
                     body.append(
                         '<a class="event-class" id="event_%s" href="%s">'% (
-                        event.id, event.get_absolute_url()))
+                            event.id, event.get_absolute_url()))
                     body.append(esc(event.title))
                     body.append('</a></li>')
                 body.append('</ul>')
                 return self.day_cell(
                     cssclass, cssid,
                     '<span class="dayNumber">%d</span> %s'% (
-                    day, ''.join(body)))
+                        day, ''.join(body)))
             return self.day_cell(
-                cssclass, cssid, '<span class="dayNumberNoReadings">%d</span>'
-                % (day))
-        return self.day_cell(
-            'col-md-1 table-bordered', 'noday', '&nbsp;')
+                cssclass, cssid,
+                '<span class="dayNumberNoReadings">%d</span>'% (day))
+        return self.day_cell('col-md-1 table-bordered', 'noday', '&nbsp;')
 
     def formatmonth(self, year, month):
         self.year, self.month = year, month

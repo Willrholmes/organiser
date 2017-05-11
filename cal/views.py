@@ -38,15 +38,16 @@ def newevent(request):
                 form.save()
                 #Use reverse to pull calendar view for the month the event
                 #was created for
-                return HttpResponseRedirect(reverse('cal:another-month', args=[
-                    cal['month'], cal['year']], current_app='cal'))
+                return HttpResponseRedirect(reverse('cal:another-month',
+                                            args=[cal['month'], cal['year']],
+                                            current_app='cal'))
         else:
             form = EventForm(request.user.username)
             return render(request, 'event.html', {'form': form})
     else:
         #If user not logged in an error message will be displayed.
         messages.warning(request, "Please login to create an event!",
-            extra_tags="event-error")
+                        extra_tags="event-error")
     return redirect('cal:home')
 
 def viewevent(request, id):
@@ -69,11 +70,11 @@ def viewevent(request, id):
                 form.save()
                 #Use reverse to pull calendar view for the month the event
                 #was created for
-                return HttpResponseRedirect(reverse('cal:another-month', args=[
-                    cal['month'], cal['year']], current_app='cal'))
+                return HttpResponseRedirect(reverse('cal:another-month',
+                                            args=[cal['month'], cal['year']],
+                                            current_app='cal'))
         else:
-            form = EventForm(request.user.username,
-                instance=instance)
+            form = EventForm(request.user.username, instance=instance)
         return render(request, 'view_event.html', {'form':form, 'id':id})
     else:
         #If user not logged in an error message will be displayed.
@@ -93,4 +94,4 @@ def delete_event(request, id):
         instance.delete()
     #Use reverse to pull calendar view for the month the event was on.
     return HttpResponseRedirect(reverse('cal:another-month', args=[
-        date.month, date.year], current_app='cal'))
+                                date.month, date.year], current_app='cal'))

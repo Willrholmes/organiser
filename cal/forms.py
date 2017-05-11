@@ -31,13 +31,15 @@ class EventForm(ModelForm):
         format="%d/%m/%Y",
         attrs={'class': 'datetimepicker4 form-control mb-2 mr-sm-2 mb-sm-0'}),
         input_formats=["%d/%m/%Y",],
-        initial=date.today)
+        initial=date.today
+        )
 
     end_date = forms.DateField(widget = forms.DateInput(
         attrs={'class': 'datetimepicker4 form-control mb-2 mr-sm-2 mb-sm-0'},
         format="%d/%m/%Y"),
         input_formats=["%d/%m/%Y",],
-        required=False)
+        required=False
+        )
 
     #Sets up form class to take data (the user) from that is passed into the
     #view from the template and use that to pull the user's friends from the db.
@@ -46,7 +48,7 @@ class EventForm(ModelForm):
         super(EventForm, self).__init__(*args, **kwargs)
         if user:
             self.fields['attendees'] = forms.ModelMultipleChoiceField(
-                        queryset=Account.objects.get(username=user).friends,
-                        widget=forms.CheckboxSelectMultiple,
-                        required=False,
-                        )
+                queryset=Account.objects.get(username=user).friends,
+                widget=forms.CheckboxSelectMultiple,
+                required=False,
+                )

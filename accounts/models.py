@@ -18,5 +18,6 @@ class Account(models.Model):
 @receiver(post_save, sender=User)
 def create_profile(sender, **kwargs):
     if kwargs.get("created", False):
-        Account.objects.get_or_create(user=kwargs.get('instance'),
-                username=kwargs.get('instance').username)
+        Account.objects.get_or_create(
+            user=kwargs.get('instance'),
+            username=kwargs.get('instance').username)
