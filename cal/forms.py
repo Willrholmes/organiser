@@ -7,10 +7,11 @@ from datetime import date
 from django import forms
 
 class EventForm(ModelForm):
-
+    #Meta class allows specification of which model fields required in form
     class Meta:
         model = Events
         exclude = ['created', 'creator', 'private']
+        #Widgets allows us to add attributes to HTML for form
         widgets = {'title':forms.TextInput(attrs={'class':'form-control'}),
             'start_time':forms.TimeInput(attrs={
                 'class':'datetimepicker3 form-control mb-2 mr-sm-2 mb-sm-0'}),
@@ -23,6 +24,9 @@ class EventForm(ModelForm):
             }),
         }
 
+    #These are declared separately as a number of attributes need to be added.
+    #This includes the datetimepicker class which user Jquery to display
+    #Bootstrap datetimepicker.
     start_date = forms.DateField(widget = forms.DateInput(
         format="%d/%m/%Y",
         attrs={'class': 'datetimepicker4 form-control mb-2 mr-sm-2 mb-sm-0'}),
@@ -35,6 +39,9 @@ class EventForm(ModelForm):
         input_formats=["%d/%m/%Y",],
         required=False)
 
+    #Sets up form class to take data (the user) from that is passed into the
+    #view from the template and use that to pull the user's friends from the db.
+    #This allows us to display the friends as tickbox options in the event form.
     def __init__(self, user=None, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
         if user:

@@ -18,5 +18,7 @@ class Events(models.Model):
     private = models.BooleanField(default=False)
     description = models.TextField(blank=True)
 
+    #Allows calendarify template tag to pull URLs for each event diplayed in a
+    #calendar.
     def get_absolute_url(self):
         return reverse('cal:viewevent', args=[str(self.id)], current_app='cal')

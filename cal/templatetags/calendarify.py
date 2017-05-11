@@ -12,6 +12,7 @@ def do_month_calendarify(parser, token):
     # Template syntax is {% calendarify year month %}
     try:
         tag_name, year, month, event_list = token.split_contents()
+    #Raise exception if not all arguments available.
     except ValueError:
         raise template.TemplateSyntaxError(
             "%r tag requires three arguments" % token.contents.split()[0]
@@ -20,6 +21,7 @@ def do_month_calendarify(parser, token):
 
 class CalendarifyNode(template.Node):
 
+    #Set up class with required variables
     def __init__(self, year, month, event_list):
         try:
             self.year = template.Variable(year)
@@ -28,6 +30,7 @@ class CalendarifyNode(template.Node):
         except ValueError:
             raise template.TemplateSyntaxError
 
+    #Uses variables as arguments to call EventCalendar.formatmonth
     def render(self, context):
         try:
             my_year = self.year.resolve(context)
@@ -37,14 +40,18 @@ class CalendarifyNode(template.Node):
             return cal.formatmonth(
                 int(my_year), int(my_month))
         except ValueError:
-            return "%s, %s, %s" % (my_month, my_year, my_event_list)
+            return "Calendar requires month, year and events list input"
 
+#Class inherits python's built in HTMLCalendar class
 class EventCalendar(HTMLCalendar):
-    # Use Python's HTMLCalendar and put user events over top
+
     def __init__(self, events, month):
         super(EventCalendar, self).__init__()
+        #Set up so that the events list is associated with object
         self.events = self.group_by_day(events, month)
 
+    #Returns the HTML required to display a calendar view for a certain month
+    #and year and overlays events on each day.
     def formatday(self, day, weekday):
         if day != 0:
             cssid = self.cssclasses[weekday]
@@ -56,11 +63,14 @@ class EventCalendar(HTMLCalendar):
                 body = ['<ul class="day">']
                 for event in self.events[day]:
                     body.append('<li>')
+                    #Adds start time if event only on one day.
                     if event.start_time != None and event.start_date == date(
                         self.year, self.month, day):
                         body.append(
                             "<time class='time'>%s </time>" % (
                             event.start_time.strftime("%H:%M")))
+                    #Utilises reverse function in model to allow events to lead
+                    #to event view URL.
                     body.append(
                         '<a class="event-class" id="event_%s" href="%s">'% (
                         event.id, event.get_absolute_url()))
@@ -81,6 +91,7 @@ class EventCalendar(HTMLCalendar):
         self.year, self.month = year, month
         return super(EventCalendar, self).formatmonth(year, month)
 
+    #Group events by day so they can easily be added to formatday function.
     def group_by_day(self, events, month):
         return_dict = {}
         for event in events:
@@ -107,6 +118,8 @@ class EventCalendar(HTMLCalendar):
         return return_dict
 
     def day_cell(self, cssclass, cssid, body):
+        #OnClick Jquery function allows <td> tags to be clicked in same way as
+        #<a> tags with an appropriate link.
         return """
             <td class="%s" id="%s" onClick="document.location.href=
             \'/cal/newevent/\';">%s</td>
